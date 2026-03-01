@@ -53,16 +53,23 @@ class CPU:
         print(f'hello {user}')
 
 
-cpu = CPU()
+if __name__ == '__main__':
+    # initialize CPU
+    cpu = CPU()
 
-# just doing nothing:
-print('-> doing nothing:')
-cpu.run_commands(commands=[NOP] * 100)
+    # just doing nothing:
+    print('-> doing nothing:')
+    cmds = [NOP] * 100
+    cpu.run_commands(commands=cmds)
 
-# say hello
-print('-> now saying hello:')
-cpu.run_commands(commands=[SAY_HELLO])
+    # say hello
+    print('-> now saying hello:')
+    cmds = [SAY_HELLO]
+    cpu.run_commands(commands=cmds)
 
-# invalid command
-print('-> now invalid command after 5 saying hello for 5 times')
-cpu.run_commands(commands=[NOP] * 100 + [SAY_HELLO] *5 + [-99])
+    # invalid command
+    print('-> now invalid command after 5 saying hello for 5 times')
+    cmds = [NOP] * 5
+    cmds += [SAY_HELLO] * 5
+    cmds += [-99]
+    cpu.run_commands(commands=cmds)
