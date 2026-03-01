@@ -12,7 +12,7 @@ Wie schreibe ich eine CPU in Python?
     - den Befehl ausführen (wenn er ihn kennt)
     - mit dem nächsten Befehl weiter machen
 """
-import os
+import getpass
 from typing import List
 
 NOP = 0
@@ -20,27 +20,26 @@ SAY_HELLO = 99
 
 
 class CPU:
-    CMD_REGISTER = {NOP: "_nop",
-                    SAY_HELLO: "_say_hello"}
+    CMD_REGISTER = [NOP, SAY_HELLO]
 
-    def __init__(self):
-        print('CPU is ready to use')
+    def __init__(self, commands: List):
+        self.mem = commands
+        self.pc = 0
 
-    def run_commands(self, commands: List):
-        pc = 0
-        commands = commands
+    def run(self):
+        while self.pc < len(self.mem):
+            op_code = self.mem[self.pc]  # read current command
+            self.eval(op_code=op_code)  # evaluate/run command
+            self.pc += 1
 
-        while pc < len(commands):
-            current_cmd = commands[pc]  # read current command
-            self.eval(cmd=current_cmd)  # evaluate/run command
-            pc += 1
-
-    def eval(self, cmd):
-        if cmd not in self.CMD_REGISTER:
-            raise AttributeError(f'Unknown command: {cmd}. Valid commands are {list(self.CMD_REGISTER.keys())}')
-
-        method_name = self.CMD_REGISTER[cmd]
-        getattr(self, method_name)()
+    def eval(self, op_code):
+        if op_code == NOP:
+            self._nop()
+        elif op_code == SAY_HELLO:
+            self._say_hello()
+        else:
+            raise AttributeError(
+                f'Unknown operation {op_code} at pc={self.pc}. Valid operations are {self.CMD_REGISTER}')
 
     @staticmethod
     def _nop():
@@ -49,27 +48,27 @@ class CPU:
 
     @staticmethod
     def _say_hello():
-        user = os.getlogin()
+        user = getpass.getuser()
         print(f'hello {user}')
 
 
 if __name__ == '__main__':
-    # initialize CPU
-    cpu = CPU()
-
     # just doing nothing:
     print('-> doing nothing:')
     cmds = [NOP] * 100
-    cpu.run_commands(commands=cmds)
+    cpu = CPU(cmds)
+    cpu.run()
 
     # say hello
     print('-> now saying hello:')
     cmds = [SAY_HELLO]
-    cpu.run_commands(commands=cmds)
+    cpu = CPU(cmds)
+    cpu.run()
 
     # invalid command
-    print('-> now invalid command after 5 saying hello for 5 times')
+    print('-> now invalid command after saying hello 5 times')
     cmds = [NOP] * 5
     cmds += [SAY_HELLO] * 5
     cmds += [-99]
-    cpu.run_commands(commands=cmds)
+    cpu = CPU(cmds)
+    cpu.run()
