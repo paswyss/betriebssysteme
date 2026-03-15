@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# find all files in the system (exclude some folders)
+find / \
+  -type f \
+  ! -path '/home/*' \
+  ! -path '/tmp/*' \
+  ! -path '/var/tmp/*' \
+  2>/dev/null \
+| sort \
+| diff - <(cat /var/lib/dpkg/info/*.{list,conffiles} | sort | uniq) \ # diff to a concatenated (sorted/unique) list of package files
+| grep '^<' \ # only lines starting with < (=present in system, but not from package files)
+| sed 's/^< //' \ # replace > with nothing
+>> diff_files
+echo differences saved to diff_files
