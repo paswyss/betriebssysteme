@@ -53,13 +53,14 @@ class CPU:
         return self.mem[pc]
 
     def eval(self):
-        if self.op == NOP:
+        op = self.op
+        if op == NOP:
             self._nop()
-        elif self.op == JMP:
+        elif op == JMP:
             self._jump()
-        elif self.op == SAY_HELLO:
+        elif op == SAY_HELLO:
             self._say_hello()
-        elif self.op == SAY_BYE:
+        elif op == SAY_BYE:
             self._say_bye()
         else:
             raise AttributeError(
@@ -70,21 +71,27 @@ class CPU:
         self.pc += 1
 
     def _jump(self):
-        """reads next command (pointer to new command), gets operation code, evaluates operation code"""
-        target = self.read(pc=self.pc + 1)  # read next command to get where to jump to
+        """reads next command, interprets it as pointer to new command and sets pc accordingly"""
+        # get target (read from the following cmd)
+        if self.pc + 1 > len(self.mem):
+            raise IndexError(f'JMP at pc={self.pc} has no target address')
+        target = self.read(pc=self.pc + 1)
+
+        # set pc accordingly
+        if not (0 <= target < len(self.mem)):
+            raise IndexError(f'Invalid jump target {target} at pc={self.pc}')
         self.pc = target
-        print(f'jump to pc={self.pc}')
 
     def _say_hello(self):
         user = getpass.getuser()
-        print(f'hello {user} (pc={self.pc})')
-        sleep(2)
+        print(f'hello {user}')
+        sleep(1.5)
         self.pc += 1
 
     def _say_bye(self):
         user = getpass.getuser()
-        print(f'bye {user} (pc={self.pc})')
-        sleep(2)
+        print(f'bye {user}')
+        sleep(1.5)
         self.pc += 1
 
 
