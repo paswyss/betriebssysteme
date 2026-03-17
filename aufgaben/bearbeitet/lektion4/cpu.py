@@ -23,7 +23,7 @@ D.h. die erste Program Instanz soll einen Sprung (JMP) in die zweite Program Ins
 """
 import getpass
 from time import sleep
-from typing import List
+from typing import List, Optional
 
 NOP = 'NOP'
 JMP = 'JMP'
@@ -40,50 +40,52 @@ class CPU:
     def __init__(self, commands: List):
         self.mem = commands
         self.pc = 0
+        self.op = NOP
 
     def run(self):
         while self.pc < len(self.mem):
-            op_code = self.read(pc=self.pc)  # read current command
-            self.eval(op_code=op_code)  # evaluate/run command
-            self.pc += 1
+            self.op = self.read()  # read current command
+            self.eval()  # evaluate/run command
 
-    def read(self, pc: int):
+    def read(self, pc: Optional[int] = None) -> int:
+        if pc is None:
+            pc = self.pc
         return self.mem[pc]
 
-    def eval(self, op_code):
-        if op_code == NOP:
+    def eval(self):
+        if self.op == NOP:
             self._nop()
-        elif op_code == JMP:
+        elif self.op == JMP:
             self._jump()
-        elif op_code == SAY_HELLO:
+        elif self.op == SAY_HELLO:
             self._say_hello()
-        elif op_code == SAY_BYE:
+        elif self.op == SAY_BYE:
             self._say_bye()
         else:
             raise AttributeError(
-                f'Unknown operation {op_code} at pc={self.pc}. Valid operations are {self.CMD_REGISTER}')
+                f'Unknown operation {self.op} at pc={self.pc}. Valid operations are {self.CMD_REGISTER}')
 
-    @staticmethod
-    def _nop():
+    def _nop(self):
         # print('doing nothing')
-        pass
+        self.pc += 1
 
     def _jump(self):
         """reads next command (pointer to new command), gets operation code, evaluates operation code"""
-        self.pc = self.read(self.pc + 1)  # read next command to get where to jump to
-        op_code = self.read(self.pc)
+        target = self.read(pc=self.pc + 1)  # read next command to get where to jump to
+        self.pc = target
         print(f'jump to pc={self.pc}')
-        self.eval(op_code=op_code)
 
     def _say_hello(self):
         user = getpass.getuser()
         print(f'hello {user} (pc={self.pc})')
         sleep(2)
+        self.pc += 1
 
     def _say_bye(self):
         user = getpass.getuser()
         print(f'bye {user} (pc={self.pc})')
         sleep(2)
+        self.pc += 1
 
 
 if __name__ == '__main__':
