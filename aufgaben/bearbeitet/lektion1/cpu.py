@@ -2,10 +2,10 @@
 Was ist eine virtuelle CPU:
 - imitiert physikalische CPU
 Was macht eine CPU für seine Benutzer:in?
-- Befehle ausführen indem es die vereinfachten Befehle in CPU-Befehle umwandelt und ausführt. Z.B. lesen von Daten und sie an einem anderen Ort speichern
+- Befehle ausführen, indem es die vereinfachten Befehle in CPU-Befehle umwandelt und ausführt. Z.B. lesen von Daten und sie an einem anderen Ort speichern
 Wie schreibe ich eine CPU in Python?
 - es braucht eine Speicherung von Befehlen (z.B. Array)
-- es braucht ein programm counter (PC), damit der CPU weiss, wo er ist
+- es braucht ein programm counter (PC), damit der CPU weis, wo er ist
 - Der CPU muss:
     - den aktuellen Befehl lesen
     - evaluieren, ob er den Befehl kennt (ob er im Registersatz ist)
