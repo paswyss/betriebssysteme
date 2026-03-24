@@ -23,7 +23,7 @@ D.h. die erste Program Instanz soll einen Sprung (JMP) in die zweite Program Ins
 """
 import getpass
 from time import sleep
-from typing import List, Optional
+from typing import List
 
 NOP = 'NOP'
 JMP = 'JMP'
@@ -47,10 +47,8 @@ class CPU:
             self.op = self.read()  # read current command
             self.eval()  # evaluate/run command
 
-    def read(self, pc: Optional[int] = None) -> int:
-        if pc is None:
-            pc = self.pc
-        return self.mem[pc]
+    def read(self) -> int:
+        return self.mem[self.pc]
 
     def eval(self):
         op = self.op
@@ -75,7 +73,7 @@ class CPU:
         # get target (read from the following cmd)
         if self.pc + 1 > len(self.mem):
             raise IndexError(f'JMP at pc={self.pc} has no target address')
-        target = self.read(pc=self.pc + 1)
+        target = self.mem[self.pc + 1]
 
         # set pc accordingly
         if not (0 <= target < len(self.mem)):
