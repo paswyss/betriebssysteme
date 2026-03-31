@@ -41,8 +41,13 @@ MEMORY = [
     # programm 1
     NOP, NOP, SAY_HELLO, NOP, JMP, 10,
     255, NOP, SAY_HELLO, SAY_HELLO,  # should be skipped tue to jump
+
     # programm 2
-    NOP, NOP, NOP, NOP, SAY_BYE, JMP, 0, NOP, NOP, 255,
+    NOP, NOP, NOP, NOP, SAY_BYE, JMP, 0,
+
+    # empty space
+    None, None, None,
+
     # ISR1
     NOP, NOP, NOP, NOP, IRET, None, None, None, None, None,
     # ISR2
@@ -161,7 +166,7 @@ class CPU:
         if irq not in self.IVT:
             raise ValueError(f'Unknown interrupt {irq}')
         # print(f'--- enter IRQ: {irq}')
-        # sleep(irq / 4) # keep high prio interrupts 'alive' (for demonstration only)
+        # sleep(irq / 4)  # keep high prio interrupts 'alive' (for demonstration only)
 
         # save current context (incl. pc)
         self.context_stack.append({'context': self.current_context,
@@ -186,12 +191,12 @@ class CPU:
         self.pc = context["pc"]
 
         # if self.current_irq > 0:
-        #     print(f'switched back to IRQ-{self.current_irq}')
+        #     print(f'iret -> switched back to IRQ-{self.current_irq}')
         # else:
         #     if len(self.pending_irq) > 0:
-        #         print(f'still  {len(self.pending_irq)} interrupts in queue')
+        #         print(f'iret -> still  {len(self.pending_irq)} interrupts in queue')
         #     else:
-        #         print(f'switched back to context {self.current_context}')
+        #         print(f'iret -> switched back to context {self.current_context}')
 
 
 if __name__ == '__main__':
