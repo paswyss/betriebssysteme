@@ -131,13 +131,13 @@ class CPU:
     def _say_hello(self):
         user = getpass.getuser()
         print(f'hello {user}')
-        sleep(0.5)
+        sleep(0.1)
         self.pc += 1
 
     def _say_bye(self):
         user = getpass.getuser()
         print(f'bye {user}')
-        sleep(0.5)
+        sleep(0.1)
         self.pc += 1
 
     def interrupt(self, code):
@@ -160,7 +160,8 @@ class CPU:
     def _enter_interrupt(self, irq: int):
         if irq not in self.IVT:
             raise ValueError(f'Unknown interrupt {irq}')
-        print(f'interrupted - IRQ: {irq}')
+        # print(f'--- enter IRQ: {irq}')
+        # sleep(irq / 4) # keep high prio interrupts 'alive' (for demonstration only)
 
         # save current context (incl. pc)
         self.context_stack.append({'context': self.current_context,
@@ -184,10 +185,13 @@ class CPU:
         self.current_irq = context['current_irq']
         self.pc = context["pc"]
 
-        if self.current_irq > 0:
-            print(f'switched back to IRQ-{self.current_irq}')
-        else:
-            print(f'switched back to context {self.current_context}')
+        # if self.current_irq > 0:
+        #     print(f'switched back to IRQ-{self.current_irq}')
+        # else:
+        #     if len(self.pending_irq) > 0:
+        #         print(f'still  {len(self.pending_irq)} interrupts in queue')
+        #     else:
+        #         print(f'switched back to context {self.current_context}')
 
 
 if __name__ == '__main__':
@@ -201,7 +205,7 @@ if __name__ == '__main__':
 
     # start interrupts
     def interrupt(irq, freq: float):
-        sleep(freq * 2)
+        sleep(1.5 + 0.5 * irq)
         while True:
             cpu.interrupt(irq)
             sleep(freq)
@@ -210,7 +214,6 @@ if __name__ == '__main__':
     interrupt1 = Thread(target=interrupt, kwargs={'irq': 1, 'freq': 1})
     interrupt2 = Thread(target=interrupt, kwargs={'irq': 2, 'freq': 2})
     interrupt3 = Thread(target=interrupt, kwargs={'irq': 3, 'freq': 3})
-
     interrupt1.start()
     interrupt2.start()
     interrupt3.start()
